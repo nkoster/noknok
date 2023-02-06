@@ -1,0 +1,12 @@
+{
+  "name": "auth-backend",
+  "version": "1.0.0",
+  "description": "Authenticator Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "Niels Koster",
+  "license": "MIT"
+}
