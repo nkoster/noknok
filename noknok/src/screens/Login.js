@@ -7,6 +7,7 @@ const LoginScreen = () => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const { accessToken, login } = useContext(AuthContext)
   const navigation = useNavigation()
@@ -15,12 +16,18 @@ const LoginScreen = () => {
     await login(username, password)
     if (accessToken) {
       navigation.navigate('Home')
+      setError('')
+    } else {
+      setError('Gebruikersnaam of wachtwoord onjuist')
+      setUsername('')
+      setPassword('')
     }
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Inloggen</Text>
+      {error ? <Text style={styles.error}>{error}</Text> : null}
       <TextInput
         style={styles.input}
         placeholder='Gebruikersnaam'
@@ -34,7 +41,11 @@ const LoginScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleLogin}
+        disabled={!username || !password}
+      >
         <Text style={styles.buttonText}>Inloggen</Text>
       </TouchableOpacity>
     </View>
@@ -52,6 +63,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 30
+  },
+  error: {
+    color: 'red',
+    marginBottom: 20
   },
   input: {
     borderWidth: 1,
