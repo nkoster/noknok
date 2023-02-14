@@ -1,6 +1,7 @@
 backend/node_modules/
 backend/db.json
 backend/.env
+backend/request.rest
 noknok/node_modules/
 tmp/**/*
 .idea/
