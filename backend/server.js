@@ -26,7 +26,9 @@ app.use(express.json())
 app.use(cors())
 
 app.post('/logout', (req, res) => {
-  console.log(`Logout ${req.body.username}.`)
+  const host = req.headers.host
+  const remoteHost = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  console.log(`Logout ${host} (${remoteHost})`)
   refreshTokens = refreshTokens.filter(token => token !== req.body.token)
   res.redirect('/')
 })
@@ -48,17 +50,30 @@ app.post('/token', (req, res) => {
   })
 })
 
-app.post('/users', (req, res) => {
+const authenticate = (req, res, next) => {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  if (token == null) return res.sendStatus(401)
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403)
+    if (user.group !== 'admin') {
+      return res.status(403).send('Access denied')
+    }
+    req.user = user
+    next()
+  })
+}
+app.post('/users', authenticate, (req, res) => {
   res.send(users.map(u => u.username))
 })
 
-const updateUsers = _ => {
+const updateUsers = () => {
   fs.writeFile('./db.json', JSON.stringify(users), err => {
     if (err) throw err
   })
 }
 
-app.post('/adduser', async (req, res) => {
+app.post('/adduser', authenticate, async (req, res) => {
   const exists = users.find(u => u.username === req.body.username)
   if (!exists) {
     try {
@@ -116,7 +131,7 @@ const doLogin = async (req, res) => {
 
 app.post('/login', doLogin)
 
-app.post('/deleteuser', (req, res) => {
+app.post('/deleteuser', authenticate, (req, res) => {
   const user = users.find(user => user.username === req.body.username)
   if (user) {
     users = users.filter(u => u.username !== req.body.username)
