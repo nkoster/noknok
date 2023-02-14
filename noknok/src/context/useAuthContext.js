@@ -42,13 +42,21 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         console.log('Login successful.')
         dispatch({ type: 'LOGIN', payload: { accessToken: data.accessToken, refreshToken: data.refreshToken } })
+      } else {
+        console.log('Login failed.')
       }
     } catch (error) {
       console.error(error)
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
+    const response = await fetch('http://192.168.2.17:3011/logout', {
+      method: 'POST',
+    })
+    if (response.ok) {
+      console.log('Logout successful.')
+    }
     dispatch({ type: 'LOGOUT' })
   }
 
