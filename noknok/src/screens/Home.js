@@ -1,6 +1,15 @@
-import React, { useContext, useState } from 'react'
-import { View, Text, ActivityIndicator, StyleSheet, TextInput, FlatList, KeyboardAvoidingView, Button }from 'react-native'
-import { WebView } from 'react-native-webview'
+import React, { useContext, useRef, useState } from 'react'
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+  FlatList,
+  KeyboardAvoidingView,
+  Button
+} from 'react-native'
+// import { WebView } from 'react-native-webview'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
 import { parseMd } from '../util'
@@ -10,6 +19,7 @@ const HomeScreen = () => {
   const { accessToken, responses, logout, setResponses } = useContext(AuthContext)
   const [prompt, setPrompt] = useState('')
   const [loading, setLoading] = useState(false)
+  const flatListRef = useRef()
 
   const handleChangePrompt = (text) => {
     setPrompt(text)
@@ -30,6 +40,7 @@ const HomeScreen = () => {
       .catch(err => {
         console.log(err)
         setLoading(false)
+        logout()
       })
   }
 
@@ -37,30 +48,47 @@ const HomeScreen = () => {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Button title='Logout' onPress={logout} />
       <View style={styles.container}>
-        <FlatList style={styles.flatList} data={responses} renderItem={
-          ({ item }) => {
-            console.log('item answer', parseMd(item.answer))
-            return (
-            <View style={styles.red}>
-              <Text style={styles.text}>{item.question}</Text>
-              <WebView
-                  style={{ width: '100%', height: 600, border: '1px solid black' }}
-                  originWhitelist={['*']}
-                  source={{ html: parseMd(item.answer) }} />
-            </View>
-          )}
-        } />
+        <FlatList
+          ref={flatListRef}
+          style={styles.flatList}
+          data={responses}
+          renderItem={
+            ({ item }) => {
+              console.log('item answer', parseMd(item.answer))
+              return (
+                <View>
+                  <Text style={styles.textQuestion}>{item.question}</Text>
+                  <Text style={styles.textAnswer}>{item.answer}</Text>
+                  {/*<WebView*/}
+                  {/*    style={{ width: '100%', height: 600, border: '1px solid black' }}*/}
+                  {/*    originWhitelist={['*']}*/}
+                  {/*    source={{ html: parseMd(item.answer) }} />*/}
+                </View>
+              )
+            }
+          }
+          onContentSizeChange={() => flatListRef.current.scrollToEnd({
+            animated: true,
+            index: responses.length - 1,
+            viewPosition: 1
+          })}
+          onLayout={() => flatListRef.current.scrollToEnd({
+            animated: true,
+            index: responses.length - 1,
+            viewPosition: 1
+          })}
+        />
         <TextInput
           placeholder='Type here...'
           onChangeText={handleChangePrompt}
           value={prompt}
-          style={{paddingBottom: 50, width: '100%'}}
+          style={styles.textInput}
         />
-        {loading 
+        {loading
           ? <View>
-              <ActivityIndicator size='small' color='#0077cc' />
+            <ActivityIndicator size='small' color='#0077cc' />
           </View>
-          : <Button title='Submit' onPress={gptChat} disabled={prompt === ''}/>}
+          : <Button title='Submit' onPress={gptChat} disabled={prompt === ''} />}
       </View>
     </KeyboardAvoidingView>
   )
@@ -79,7 +107,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 30
   },
-  text: {
+  textQuestion: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10
+  },
+  textAnswer: {
     fontSize: 16,
     marginBottom: 10
   },
@@ -100,10 +133,16 @@ const styles = StyleSheet.create({
   },
   red: {
     backgroundColor: 'red',
-    width: '100%',
+    width: '100%'
   },
   flatList: {
+    width: '100%'
+  },
+  textInput: {
     width: '100%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    paddingBottom: 50
   }
 })
 
