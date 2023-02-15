@@ -1,6 +1,10 @@
 import React, { createContext, useReducer } from 'react'
 
-const initialState = { accessToken: null, refreshToken: null }
+const initialState = {
+  accessToken: null,
+  refreshToken: null,
+  responses: []
+}
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -15,6 +19,11 @@ const authReducer = (state, action) => {
         ...state,
         accessToken: null,
         refreshToken: null
+      }
+    case 'SET_RESPONSES':
+      return {
+        ...state,
+        responses: action.payload
       }
   }
   return state
@@ -60,13 +69,19 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' })
   }
 
+  const setResponses = async (responses) => {
+    dispatch({ type: 'SET_RESPONSES', payload: responses })
+  }
+
   return (
     <AuthContext.Provider
       value={{
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
+        responses: state.responses,
         login,
-        logout
+        logout,
+        setResponses
       }}
     >
       {children}
