@@ -1,4 +1,5 @@
 require('dotenv').config()
+const axios = require('axios')
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET
@@ -56,9 +57,6 @@ const authenticate = (req, res, next) => {
   if (token == null) return res.sendStatus(401)
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403)
-    if (user.group !== 'admin') {
-      return res.status(403).send('Access denied')
-    }
     req.user = user
     next()
   })
@@ -87,10 +85,10 @@ app.post('/adduser', authenticate, async (req, res) => {
       updateUsers()
       console.log(`User ${user.username} added.`)
       res.status(201).send()
-    } catch(err) {
+    } catch (err) {
       console.log(err)
       res.status(500).send()
-    }  
+    }
   } else {
     console.log(`${exists.username} already exists.`)
     res.status(200).send({ error: 'User already exists' })
@@ -123,7 +121,7 @@ const doLogin = async (req, res) => {
     } else {
       res.status(200).send({ error: 'Not allowed' })
     }
-  } catch(err) {
+  } catch (err) {
     console.log(err)
     res.status(500).send()
   }
@@ -137,8 +135,15 @@ app.post('/deleteuser', authenticate, (req, res) => {
     users = users.filter(u => u.username !== req.body.username)
     updateUsers()
     console.log(`User ${user.username} deleted.`)
-    res.send({ message: 'User deleted'})
+    res.send({ message: 'User deleted' })
   }
+})
+
+app.post('/gptchat', authenticate, async (req, res) => {
+  console.log('/gptchat', req.body)
+  const result = await fetchApi(req.body.prompt, req.body.responses)
+  if (result) res.send(result)
+  else res.sendStatus(403)
 })
 
 function generateAccessToken(user) {
@@ -155,3 +160,39 @@ app.listen(
   API_PORT,
   () => console.log(`server running at port ${API_PORT}`)
 )
+
+async function fetchApi(prompt, responses) {
+
+  // const prompt = 'What is the most popular programming language?'
+  // const responses = []
+
+  const postData = {
+    model: "text-davinci-003",
+    prompt: 'Show code examples in markdown.\n' + responses.reduce(
+      (acc, cur) => cur.question +
+        '\n' + cur.answer + '\n' + acc, ''
+    ) + '\n' + prompt,
+    max_tokens: 1000,
+    n: 1,
+    stop: null,
+    temperature: 0.5,
+    presence_penalty: 0,
+    frequency_penalty: 0,
+    best_of: 1,
+  }
+
+  try {
+    const response = await axios.post(process.env.OPENAI_API_URL, postData, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        }
+    })
+    console.log(response.data)
+    return response.data
+  } catch (error) {
+      console.error(error)
+      return null
+  }
+
+}
