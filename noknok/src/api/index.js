@@ -9,6 +9,9 @@ export async function gptchat(prompt, responses, accessToken) {
       prompt,
       responses
     })
-  }).then(res => res.json())
-  return response.choices[0].text
+  }).then(res => res.json()).catch(err => console.error('ERROR', err))
+  if (response.choices){
+    return response.choices[0].text
+  }
+  return null
 }
