@@ -15,8 +15,8 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     await login(username, password)
     if (accessToken) {
-      navigation.navigate('Home')
       setError('')
+      navigation.navigate('Home')
     } else {
       setError('Gebruikersnaam of wachtwoord onjuist')
       setUsername('')
