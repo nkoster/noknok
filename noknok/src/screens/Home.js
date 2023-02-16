@@ -7,12 +7,14 @@ import {
   TextInput,
   FlatList,
   KeyboardAvoidingView,
-  Button, Alert
+  Button, Alert, TouchableOpacity
 } from 'react-native'
+// const parse = require('html-react-parser')
 // import { WebView } from 'react-native-webview'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
 // import { parseMd } from '../util'
+import { Ionicons } from '@expo/vector-icons';
 
 const HomeScreen = () => {
 
@@ -87,31 +89,36 @@ const HomeScreen = () => {
                   <View style={styles.answerView}>
                     <Text style={styles.textAnswer}>{item.answer.replace(/^\n+/, '')}</Text>
                   </View>
-                  {/*<WebView*/}
-                  {/*    style={{ width: '100%', height: 600, border: '1px solid black' }}*/}
-                  {/*    originWhitelist={['*']}*/}
-                  {/*    source={{ html: parseMd(item.answer) }} />*/}
                 </View>
               )
             }
           }
-          onContentSizeChange={() => flatListRef.current.scrollToEnd({
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({
             animated: true,
             index: responses.length - 1,
             viewPosition: 1
           })}
-          onLayout={() => flatListRef.current.scrollToEnd({
+          onLayout={() => flatListRef.current?.scrollToEnd({
             animated: true,
             index: responses.length - 1,
             viewPosition: 1
           })}
         />
-        <TextInput
-          placeholder='Type here...'
-          onChangeText={handleChangePrompt}
-          value={prompt}
-          style={styles.textInput}
-        />
+        <View style={styles.inputView}>
+          <TextInput
+            placeholder='Type here...'
+            onChangeText={handleChangePrompt}
+            value={prompt}
+          />
+          <TouchableOpacity
+            disabled={loading || prompt === ''}
+            onPress={gptChat}
+          >
+            {loading
+              ? <ActivityIndicator size='small' color='silver' />
+              : <Ionicons name="md-paper-plane" size={24} color={prompt ? 'black' : 'silver'} />}
+          </TouchableOpacity>
+        </View>
         <View style={styles.bottomButtons}>
           <Button title={loading ? 'Standby...' : 'Submit'} onPress={gptChat} disabled={loading || prompt === ''} />
           {loading ? <ActivityIndicator size='small' color='silver' /> : null}
@@ -191,15 +198,17 @@ const styles = StyleSheet.create({
   flatList: {
     width: '100%'
   },
-  textInput: {
+  inputView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: '100%',
     borderColor: 'gray',
     borderWidth: 1,
     padding: 10,
-    marginBottom: 50,
+    marginBottom: 40,
     marginTop: 10,
     borderRadius: 5
-  }
+  },
 })
 
 export default HomeScreen
