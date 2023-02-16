@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({path: __dirname + '/.env'})
 const axios = require('axios')
 
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
@@ -20,6 +20,8 @@ const jwt = require('jsonwebtoken')
 const cors = require('cors')
 
 let users = require('./db.json')
+
+// const danprompt = require('./danprompt.js')
 
 let refreshTokens = []
 
@@ -140,7 +142,6 @@ app.post('/deleteuser', authenticate, (req, res) => {
 })
 
 app.post('/gptchat', authenticate, async (req, res) => {
-  console.log('/gptchat', req.body)
   const result = await fetchApi(req.body.prompt, req.body.responses)
   if (result) res.send(result)
   else res.sendStatus(403)
@@ -148,7 +149,7 @@ app.post('/gptchat', authenticate, async (req, res) => {
 
 function generateAccessToken(user) {
   return jwt.sign(user, ACCESS_TOKEN_SECRET, {
-    expiresIn: '10m'
+    expiresIn: '60m'
   })
 }
 
@@ -163,12 +164,9 @@ app.listen(
 
 async function fetchApi(prompt, responses) {
 
-  // const prompt = 'What is the most popular programming language?'
-  // const responses = []
-
   const postData = {
     model: "text-davinci-003",
-    prompt: 'Show code examples in markdown.\n' + responses.reduce(
+    prompt: '' + '\n' + responses.reduce(
       (acc, cur) => cur.question +
         '\n' + cur.answer + '\n' + acc, ''
     ) + '\n' + prompt,
@@ -188,7 +186,6 @@ async function fetchApi(prompt, responses) {
             'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
         }
     })
-    console.log(response.data)
     return response.data
   } catch (error) {
       console.error(error)
