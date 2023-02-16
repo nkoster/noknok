@@ -7,12 +7,12 @@ import {
   TextInput,
   FlatList,
   KeyboardAvoidingView,
-  Button
+  Button, Alert
 } from 'react-native'
 // import { WebView } from 'react-native-webview'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
-import { parseMd } from '../util'
+// import { parseMd } from '../util'
 
 const HomeScreen = () => {
 
@@ -44,21 +44,51 @@ const HomeScreen = () => {
       })
   }
 
+  const clearData = () => {
+    Alert.alert(
+      'Are you sure?',
+      '',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            setResponses([])
+            setPrompt('')
+          }
+        }
+      ],
+      { cancelable: true }
+    )
+  }
+
+  // const { width } = useWindowDimensions()
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Button title='Logout' onPress={logout} />
+      <View style={styles.topButtons}>
+        <Button title='Clear' onPress={clearData} />
+        <Button title='Logout' onPress={logout} />
+      </View>
       <View style={styles.container}>
         <FlatList
           ref={flatListRef}
           style={styles.flatList}
           data={responses}
+          keyExtractor={(item, index) => index.toString()}
           renderItem={
             ({ item }) => {
-              console.log('item answer', parseMd(item.answer))
               return (
                 <View>
-                  <Text style={styles.textQuestion}>{item.question}</Text>
-                  <Text style={styles.textAnswer}>{item.answer}</Text>
+                  <View style={styles.questionView}>
+                    <Text style={styles.textQuestion}>{item.question}</Text>
+                  </View>
+                  <View style={styles.answerView}>
+                    <Text style={styles.textAnswer}>{item.answer.replace(/^\n+/, '')}</Text>
+                  </View>
                   {/*<WebView*/}
                   {/*    style={{ width: '100%', height: 600, border: '1px solid black' }}*/}
                   {/*    originWhitelist={['*']}*/}
@@ -84,11 +114,10 @@ const HomeScreen = () => {
           value={prompt}
           style={styles.textInput}
         />
-        {loading
-          ? <View>
-            <ActivityIndicator size='small' color='#0077cc' />
-          </View>
-          : <Button title='Submit' onPress={gptChat} disabled={prompt === ''} />}
+        <View style={styles.bottomButtons}>
+          <Button title='Submit' onPress={gptChat} disabled={prompt === ''} />
+          {loading ? <ActivityIndicator size='small' color='lightblue' /> : null}
+        </View>
       </View>
     </KeyboardAvoidingView>
   )
@@ -101,20 +130,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
-    padding: 20
+    padding: 6
+  },
+  topButtons: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  bottomButtons: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
     marginBottom: 30
   },
+  questionView: {
+    backgroundColor: '#eee',
+    padding: 10,
+    marginTop: 20,
+    marginBottom: -10,
+    borderStyle: 'solid',
+    borderRadius: 10
+  },
   textQuestion: {
     fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10
+    fontWeight: 'bold'
+  },
+  answerView: {
+    padding: 10,
+    marginTop: 20,
+    marginBottom: 13,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderStyle: 'solid',
+    borderRadius: 10
   },
   textAnswer: {
-    fontSize: 16,
-    marginBottom: 10
+    fontSize: 16
   },
   token: {
     fontSize: 16,
@@ -142,7 +196,10 @@ const styles = StyleSheet.create({
     width: '100%',
     borderColor: 'gray',
     borderWidth: 1,
-    paddingBottom: 50
+    padding: 10,
+    marginBottom: 50,
+    marginTop: 10,
+    borderRadius: 5
   }
 })
 
