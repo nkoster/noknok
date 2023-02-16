@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, TextInput, StyleSheet, Button } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from '../context/useAuthContext'
 
@@ -18,36 +18,30 @@ const LoginScreen = () => {
       setError('')
       navigation.navigate('Home')
     } else {
-      setError('Gebruikersnaam of wachtwoord onjuist')
       setUsername('')
       setPassword('')
+      setTimeout(() => setError('Username or password is incorrect'), 500)
     }
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Inloggen</Text>
+      <Text style={styles.title}>Login</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TextInput
         style={styles.input}
-        placeholder='Gebruikersnaam'
+        placeholder='Username'
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
-        placeholder='Wachtwoord'
+        placeholder='Password'
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleLogin}
-        disabled={!username || !password}
-      >
-        <Text style={styles.buttonText}>Inloggen</Text>
-      </TouchableOpacity>
+      <Button title='Inloggen' onPress={handleLogin} />
     </View>
   )
 }

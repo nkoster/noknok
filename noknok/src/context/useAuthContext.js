@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch('http://192.168.2.17:3011/login', {
+      const response = await fetch('https://noknok.w3b.net/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = async () => {
-    const response = await fetch('http://192.168.2.17:3011/logout', {
+    const response = await fetch('https://boknok.w3b.net/logout', {
       method: 'POST',
     })
     if (response.ok) {

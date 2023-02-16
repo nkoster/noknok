@@ -1,5 +1,5 @@
 export async function gptchat(prompt, responses, accessToken) {
-  const response = await fetch('http://192.168.2.17:3011/gptchat', {
+  const response = await fetch('https://noknok.w3b.net/gptchat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
