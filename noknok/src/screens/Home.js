@@ -26,11 +26,9 @@ const HomeScreen = () => {
   }
 
   const gptChat = () => {
-    console.log('gptChat', prompt, responses)
     setLoading(true)
     gptchat(prompt, responses, accessToken)
       .then(response => {
-        console.log('chatting...', responses, response)
         const newResponses = [...responses]
         newResponses.push({ question: prompt, answer: response })
         setPrompt('')
@@ -115,8 +113,8 @@ const HomeScreen = () => {
           style={styles.textInput}
         />
         <View style={styles.bottomButtons}>
-          <Button title='Submit' onPress={gptChat} disabled={prompt === ''} />
-          {loading ? <ActivityIndicator size='small' color='lightblue' /> : null}
+          <Button title={loading ? 'Standby...' : 'Submit'} onPress={gptChat} disabled={loading || prompt === ''} />
+          {loading ? <ActivityIndicator size='small' color='silver' /> : null}
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -141,6 +139,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
+    paddingBottom: 30
   },
   title: {
     fontSize: 24,
