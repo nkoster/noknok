@@ -15,8 +15,8 @@ export default function Main() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Home'>
-        {accessToken ? null : <Stack.Screen name='Login' component={LoginScreen} options={{ title: 'NokNok AI' }} />}
-        {accessToken ? <Stack.Screen name='Home' component={HomeScreen} options={{ title: 'NokNok AI' }} /> : null}
+        {accessToken ? null : <Stack.Screen name='Login' component={LoginScreen} options={{ title: 'MindBox AI' }} />}
+        {accessToken ? <Stack.Screen name='Home' component={HomeScreen} options={{ title: 'MindBox AI' }} /> : null}
       </Stack.Navigator>
     </NavigationContainer>
   )
