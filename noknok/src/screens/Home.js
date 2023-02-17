@@ -9,11 +9,8 @@ import {
   KeyboardAvoidingView,
   Button, Alert, TouchableOpacity
 } from 'react-native'
-// const parse = require('html-react-parser')
-// import { WebView } from 'react-native-webview'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
-// import { parseMd } from '../util'
 import { Ionicons } from '@expo/vector-icons';
 
 const HomeScreen = () => {
@@ -32,7 +29,11 @@ const HomeScreen = () => {
     gptchat(prompt, responses, accessToken)
       .then(response => {
         const newResponses = [...responses]
-        newResponses.push({ question: prompt, answer: response })
+        const rgb = `rgb(${
+          Math.floor(Math.random() * 80 + 170)}, ${
+          Math.floor(Math.random() * 80 + 170)}, ${
+          Math.floor(Math.random() * 80 + 170)})`
+        newResponses.push({ question: prompt, answer: response, rgb })
         setPrompt('')
         setLoading(false)
         setResponses(newResponses)
@@ -65,8 +66,6 @@ const HomeScreen = () => {
     )
   }
 
-  // const { width } = useWindowDimensions()
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={styles.topButtons}>
@@ -81,13 +80,41 @@ const HomeScreen = () => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={
             ({ item }) => {
+              const styles = StyleSheet.create({
+                questionView: {
+                  backgroundColor: item.rgb,
+                  padding: 10,
+                  marginTop: 20,
+                  marginBottom: -10,
+                  borderStyle: 'solid',
+                  borderRadius: 10
+                },
+                textQuestion: {
+                  fontSize: 16,
+                  fontWeight: 'bold'
+                },
+                answerView: {
+                  padding: 10,
+                  marginTop: 20,
+                  marginBottom: 13,
+                  borderWidth: 1,
+                  borderColor: item.rgb,
+                  borderStyle: 'solid',
+                  borderRadius: 10
+                },
+                textAnswer: {
+                  fontSize: 16
+                },
+              })
               return (
                 <View>
                   <View style={styles.questionView}>
                     <Text style={styles.textQuestion}>{item.question}</Text>
                   </View>
                   <View style={styles.answerView}>
-                    <Text style={styles.textAnswer}>{item.answer.replace(/^\n+/, '')}</Text>
+                    <Text style={styles.textAnswer}>{
+                      item.answer.replace(/^[\n?]+/, '')
+                    }</Text>
                   </View>
                 </View>
               )
@@ -105,11 +132,13 @@ const HomeScreen = () => {
           })}
         />
         <View style={styles.inputView}>
-          <TextInput
-            placeholder='Type here...'
-            onChangeText={handleChangePrompt}
-            value={prompt}
-          />
+          <View style={styles.inputText}>
+            <TextInput
+              placeholder='Type here...'
+              onChangeText={handleChangePrompt}
+              value={prompt}
+            />
+          </View>
           <TouchableOpacity
             disabled={loading || prompt === ''}
             onPress={gptChat}
@@ -121,7 +150,9 @@ const HomeScreen = () => {
         </View>
         <View style={styles.bottomButtons}>
           <Button title={loading ? 'Standby...' : 'Submit'} onPress={gptChat} disabled={loading || prompt === ''} />
-          {loading ? <ActivityIndicator size='small' color='silver' /> : null}
+          <View style={styles.submitButton}>
+            {loading ? <ActivityIndicator size='small' color='silver' /> : null}
+          </View>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -151,30 +182,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 30
-  },
-  questionView: {
-    backgroundColor: '#eee',
-    padding: 10,
-    marginTop: 20,
-    marginBottom: -10,
-    borderStyle: 'solid',
-    borderRadius: 10
-  },
-  textQuestion: {
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  answerView: {
-    padding: 10,
-    marginTop: 20,
-    marginBottom: 13,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderStyle: 'solid',
-    borderRadius: 10
-  },
-  textAnswer: {
-    fontSize: 16
   },
   token: {
     fontSize: 16,
@@ -207,8 +214,21 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 40,
     marginTop: 10,
-    borderRadius: 5
+    borderRadius: 10
   },
+  inputText: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '90%',
+  },
+  submitButton: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 })
 
 export default HomeScreen
