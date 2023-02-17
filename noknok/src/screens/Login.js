@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react'
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from '../context/useAuthContext'
+import { Ionicons } from '@expo/vector-icons'
 
 const LoginScreen = () => {
 
@@ -26,7 +27,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Ionicons name='walk-outline' size={128} color='silver' style={{ marginBottom: 50 }} />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TextInput
         style={styles.input}
@@ -41,7 +42,11 @@ const LoginScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title='Inloggen' onPress={handleLogin} />
+      <Button
+        title='sign in'
+        onPress={handleLogin}
+        disabled={!username || !password}
+      />
     </View>
   )
 }
@@ -52,6 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#fff',
+    width: '100%',
     padding: 20
   },
   title: {
