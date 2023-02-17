@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "noknok",
-    "slug": "noknok",
-    "version": "1.0.0",
+    "name": "mindboxai",
+    "slug": "mindboxai",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,14 +12,15 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/d0d5cba7-36ea-4fd9-a01b-160f02f773bc"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.nielsdapiels.noknok"
+      "bundleIdentifier": "com.nielsdapiels.mindboxai"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,8 +33,11 @@
     },
     "extra": {
       "eas": {
-        "projectId": "20259730-1339-462f-8a0a-d80f02843e2c"
+        "projectId": "d0d5cba7-36ea-4fd9-a01b-160f02f773bc"
       }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
