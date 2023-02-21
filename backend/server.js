@@ -166,7 +166,7 @@ async function fetchApi(prompt, responses) {
 
   const postData = {
     model: "text-davinci-003",
-    prompt: '' + '\n' + responses.reduce(
+    prompt: 'Use markdown for code blocks.' + '\n' + responses.reduce(
       (acc, cur) => cur.question +
         '\n' + cur.answer + '\n' + acc, ''
     ) + '\n' + prompt,
