@@ -9,9 +9,11 @@ import {
   KeyboardAvoidingView,
   Button, Alert, TouchableOpacity
 } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons'
+import TheAnswer from '../components/TheAnswer'
 
 const HomeScreen = () => {
 
@@ -67,70 +69,107 @@ const HomeScreen = () => {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView
+      style={styles.containerOutside}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <View style={styles.topButtons}>
         <Button title='Clear' onPress={clearData} />
         <Button title='Logout' onPress={logout} />
       </View>
-      <View style={styles.container}>
-        <FlatList
-          ref={flatListRef}
-          style={styles.flatList}
-          data={responses}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={
-            ({ item }) => {
-              const styles = StyleSheet.create({
-                questionView: {
-                  backgroundColor: item.rgb,
-                  padding: 10,
-                  marginTop: 20,
-                  marginBottom: -10,
-                  borderStyle: 'solid',
-                  borderRadius: 10
-                },
-                textQuestion: {
-                  fontSize: 16,
-                  fontWeight: 'bold'
-                },
-                answerView: {
-                  padding: 10,
-                  marginTop: 20,
-                  marginBottom: 13,
-                  borderWidth: 1,
-                  borderColor: item.rgb,
-                  borderStyle: 'solid',
-                  borderRadius: 10
-                },
-                textAnswer: {
-                  fontSize: 16
-                },
-              })
-              return (
-                <View>
-                  <View style={styles.questionView}>
-                    <Text style={styles.textQuestion}>{item.question}</Text>
-                  </View>
-                  <View style={styles.answerView}>
-                    <Text style={styles.textAnswer}>{
-                      item.answer.replace(/^[\n?]+/, '')
-                    }</Text>
-                  </View>
-                </View>
+      <FlatList
+        ref={flatListRef}
+        style={styles.flatList}
+        data={responses}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={
+          ({ item }) => {
+            const styles = StyleSheet.create({
+              questionView: {
+                backgroundColor: item.rgb,
+                padding: 14,
+                marginTop: 20,
+                marginBottom: -10,
+                borderStyle: 'solid',
+                borderRadius: 10
+              },
+              textQuestion: {
+                fontSize: 16,
+                fontWeight: 'bold'
+              },
+              answerView: {
+                position: 'relative',
+                padding: 14,
+                marginTop: 20,
+                marginBottom: 13,
+                borderWidth: 1,
+                borderColor: item.rgb,
+                borderStyle: 'solid',
+                borderRadius: 10,
+                backgroundColor: '#fff'
+              },
+              textAnswer: {
+                fontSize: 16
+              },
+              copyIcon: {
+                position: 'absolute',
+                top: 3,
+                right: 3
+              }
+            })
+
+            const copyToClipboard = () => {
+              Alert.alert(
+                'Copied to clipboard',
+                '',
+                [
+                  {
+                    text: 'OK',
+                    onPress: async () => {
+                      try {
+                        await Clipboard.setStringAsync(item.answer.replace(/^[\n?]+/, '').trim())
+                      } catch (error) {
+                        console.log(error)
+                      }
+                    }
+                  }
+                ],
+                { cancelable: true }
               )
             }
+
+            return (
+              <View>
+                <View style={styles.questionView}>
+                  <Text style={styles.textQuestion}>{item.question}</Text>
+                </View>
+                <View style={styles.answerView}>
+                  <TheAnswer data={item.answer.replace(/^[\n?]+/, '')} />
+                  <View style={styles.copyIcon}>
+                    <TouchableOpacity onPress={copyToClipboard}>
+                      <Ionicons
+                        name='copy-outline'
+                        size={16}
+                        color={'silver'} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            )
           }
-          onContentSizeChange={() => flatListRef.current?.scrollToEnd({
-            animated: true,
-            index: responses.length - 1,
-            viewPosition: 1
-          })}
-          onLayout={() => flatListRef.current?.scrollToEnd({
-            animated: true,
-            index: responses.length - 1,
-            viewPosition: 1
-          })}
-        />
+        }
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({
+          animated: true,
+          index: responses.length - 1,
+          viewPosition: 1
+        })}
+        onLayout={() => flatListRef.current?.scrollToEnd({
+          animated: true,
+          index: responses.length - 1,
+          viewPosition: 1
+        })}
+      />
+      <View style={styles.inputContainer}>
         <View style={styles.inputView}>
           <View style={styles.inputText}>
             <TextInput
@@ -145,14 +184,11 @@ const HomeScreen = () => {
           >
             {loading
               ? <ActivityIndicator size='small' color='silver' />
-              : <Ionicons name="md-paper-plane" size={24} color={prompt ? 'black' : 'silver'} />}
+              : <Ionicons
+                name='md-paper-plane'
+                size={24}
+                color={prompt ? 'black' : 'silver'} />}
           </TouchableOpacity>
-        </View>
-        <View style={styles.bottomButtons}>
-          <Button title={loading ? 'Standby...' : 'Submit'} onPress={gptChat} disabled={loading || prompt === ''} />
-          <View style={styles.submitButton}>
-            {loading ? <ActivityIndicator size='small' color='silver' /> : null}
-          </View>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -160,13 +196,17 @@ const HomeScreen = () => {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
+  containerOutside: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
-    padding: 6
+    backgroundColor: '#fafafa',
+    padding: 10
+  },
+  containerInside: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   topButtons: {
     width: '100%',
@@ -182,11 +222,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginBottom: 30
-  },
-  token: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 20
   },
   button: {
     backgroundColor: '#0077cc',
@@ -205,23 +240,30 @@ const styles = StyleSheet.create({
   flatList: {
     width: '100%'
   },
+  copyPaste: {
+    textAlign: 'right'
+  },
+  inputContainer: {
+    padding: 0
+  },
   inputView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     borderColor: 'gray',
+    backgroundColor: '#fff',
     borderWidth: 1,
     padding: 10,
-    marginBottom: 40,
+    marginBottom: 90,
     marginTop: 10,
     borderRadius: 10
   },
   inputText: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    width: '90%',
+    width: '93%'
   },
   submitButton: {
     width: 32,
