@@ -1,4 +1,4 @@
-import { Text, StyleSheet } from 'react-native'
+import { Text, StyleSheet, View } from 'react-native'
 
 function TheAnswer({ data }) {
 
@@ -16,9 +16,11 @@ function TheAnswer({ data }) {
         if (codeBlocks && codeBlocks.includes('```' + item + '```')) {
           console.log('CODE BLOCK', item.slice(1, -1))
           return (
-            <Text key={index} style={styles.codeBlock}>
-              {item.split('\n').slice(1).join('\n')}
-            </Text>
+            <View key={index} style={styles.codeBlock}>
+              <Text style={styles.codeBlockText}>
+                {item.split('\n').slice(1).join('\n')}
+              </Text>
+            </View>
           )
         } else {
           console.log('TEXT', item)
@@ -33,8 +35,12 @@ export default TheAnswer
 
 const styles = StyleSheet.create({
   codeBlock: {
+    // backgroundColor: '#f2f2f2',
+    borderRadius: 10,
+    padding: 8
+  },
+  codeBlockText: {
     fontFamily: 'Courier New',
     fontWeight: 'bold',
-    padding: 8
   }
 })
