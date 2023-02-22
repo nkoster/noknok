@@ -27,7 +27,7 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Ionicons name='walk-outline' size={128} color='silver' style={{ marginBottom: 50 }} />
+      <Ionicons name='walk-outline' size={128} color='silver' style={styles.topIcon} />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TextInput
         style={styles.input}
@@ -42,11 +42,13 @@ const LoginScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button
-        title='sign in'
-        onPress={handleLogin}
-        disabled={!username || !password}
-      />
+      <View style={styles.button}>
+        <Button
+          title='sign in'
+          onPress={handleLogin}
+          disabled={!username || !password}
+        />
+      </View>
     </View>
   )
 }
@@ -56,13 +58,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: '#fafafa',
     width: '100%',
     padding: 20
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 30
+  topIcon: {
+    marginBottom: 20,
+    marginTop: 20
   },
   error: {
     color: 'red',
@@ -71,20 +73,15 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 12,
+    fontSize: 18,
+    marginTop: 10,
     width: '100%'
   },
   button: {
-    backgroundColor: '#0077cc',
-    borderRadius: 5,
-    padding: 10,
-    width: '100%'
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center'
+    marginTop: 30,
   }
 })
 
