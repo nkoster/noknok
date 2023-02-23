@@ -39,7 +39,18 @@ function TheAnswer({ data }) {
                   </Text>
                 )
               } else {
-                return <Text key={index}>{item}</Text>
+                return <Text key={index}>{item.split(regexBold).map((item, index) => {
+                  if (bolds && bolds.includes('**' + item + '**')) {
+                    console.log('BOLD', item)
+                    return (
+                      <Text key={index} style={{ fontWeight: 'bold' }}>
+                        {item}
+                      </Text>
+                    )
+                  } else {
+                    return <Text key={index}>{item}</Text>
+                  }
+                } )}</Text>
               }
             })}</Text>
           }
