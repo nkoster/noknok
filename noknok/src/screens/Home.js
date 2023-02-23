@@ -9,11 +9,11 @@ import {
   KeyboardAvoidingView,
   Button, Alert, TouchableOpacity
 } from 'react-native'
-import * as Clipboard from 'expo-clipboard'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
 import { Ionicons } from '@expo/vector-icons'
 import TheAnswer from '../components/TheAnswer'
+import Clipper from '../components/Clipper'
 
 const HomeScreen = () => {
 
@@ -67,6 +67,7 @@ const HomeScreen = () => {
       { cancelable: true }
     )
   }
+  // const inputViewStyle = { ...styles.inputView, marginBottom: marginBottomAnimated }
 
   return (
     <KeyboardAvoidingView
@@ -94,11 +95,12 @@ const HomeScreen = () => {
                 borderRadius: 10
               },
               textQuestion: {
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: 'bold'
               },
               answerView: {
                 position: 'relative',
+                width: '100%',
                 padding: 14,
                 marginTop: 20,
                 marginBottom: 13,
@@ -110,49 +112,18 @@ const HomeScreen = () => {
               },
               textAnswer: {
                 fontSize: 16
-              },
-              copyIcon: {
-                position: 'absolute',
-                top: 3,
-                right: 3
               }
             })
-
-            const copyToClipboard = () => {
-              Alert.alert(
-                'Copied to clipboard',
-                '',
-                [
-                  {
-                    text: 'OK',
-                    onPress: async () => {
-                      try {
-                        await Clipboard.setStringAsync(item.answer.replace(/^[\n?]+/, '').trim())
-                      } catch (error) {
-                        console.log(error)
-                      }
-                    }
-                  }
-                ],
-                { cancelable: true }
-              )
-            }
 
             return (
               <View>
                 <View style={styles.questionView}>
                   <Text style={styles.textQuestion}>{item.question}</Text>
+                  <Clipper data={item.question} color={'#777'} />
                 </View>
                 <View style={styles.answerView}>
                   <TheAnswer data={item.answer.replace(/^[\n?]+/, '')} />
-                  <View style={styles.copyIcon}>
-                    <TouchableOpacity onPress={copyToClipboard}>
-                      <Ionicons
-                        name='copy-outline'
-                        size={16}
-                        color={'silver'} />
-                    </TouchableOpacity>
-                  </View>
+                  <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'} />
                 </View>
               </View>
             )
@@ -194,6 +165,8 @@ const HomeScreen = () => {
     </KeyboardAvoidingView>
   )
 }
+
+export default HomeScreen
 
 const styles = StyleSheet.create({
   containerOutside: {
@@ -254,7 +227,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     padding: 10,
-    marginBottom: 90,
+    marginBottom: 98,
     marginTop: 10,
     borderRadius: 10
   },
@@ -272,5 +245,3 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
-
-export default HomeScreen
