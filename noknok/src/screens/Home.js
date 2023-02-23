@@ -165,7 +165,7 @@ const HomeScreen = () => {
                 : <Ionicons
                   name='md-paper-plane'
                   size={24}
-                  color={prompt ? 'black' : 'silver'} />}
+                  color={prompt.trim() ? 'black' : 'silver'} />}
             </TouchableOpacity>
           </View>
         </View>
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fafafa',
+    backgroundColor: '#f8f8f8',
     padding: 10
   },
   containerInside: {
@@ -230,7 +230,6 @@ const styles = StyleSheet.create({
   inputView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // alignItems: 'center',
     width: '100%',
     borderColor: 'silver',
     backgroundColor: '#fff',
