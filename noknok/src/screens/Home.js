@@ -7,7 +7,7 @@ import {
   TextInput,
   FlatList,
   KeyboardAvoidingView,
-  Button, Alert, TouchableOpacity
+  Button, Alert, TouchableOpacity, TouchableWithoutFeedback, Keyboard
 } from 'react-native'
 import { AuthContext } from '../context/useAuthContext'
 import { gptchat } from '../api'
@@ -67,105 +67,110 @@ const HomeScreen = () => {
       { cancelable: true }
     )
   }
-  // const inputViewStyle = { ...styles.inputView, marginBottom: marginBottomAnimated }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.containerOutside}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.topButtons}>
-        <Button title='Clear' onPress={clearData} />
-        <Button title='Logout' onPress={logout} />
-      </View>
-      <FlatList
-        ref={flatListRef}
-        style={styles.flatList}
-        data={responses}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={
-          ({ item }) => {
-            const styles = StyleSheet.create({
-              questionView: {
-                backgroundColor: item.rgb,
-                padding: 14,
-                marginTop: 20,
-                marginBottom: -10,
-                borderStyle: 'solid',
-                borderRadius: 10
-              },
-              textQuestion: {
-                fontSize: 14,
-                fontWeight: 'bold'
-              },
-              answerView: {
-                position: 'relative',
-                width: '100%',
-                padding: 14,
-                marginTop: 20,
-                marginBottom: 13,
-                borderWidth: 1,
-                borderColor: item.rgb,
-                borderStyle: 'solid',
-                borderRadius: 10,
-                backgroundColor: '#fff'
-              },
-              textAnswer: {
-                fontSize: 16
-              }
-            })
-
-            return (
-              <View>
-                <View style={styles.questionView}>
-                  <Text style={styles.textQuestion}>{item.question}</Text>
-                  <Clipper data={item.question} color={'#777'} />
-                </View>
-                <View style={styles.answerView}>
-                  <TheAnswer data={item.answer.replace(/^[\n?]+/, '')} />
-                  <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'} />
-                </View>
-              </View>
-            )
-          }
-        }
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({
-          animated: true,
-          index: responses.length - 1,
-          viewPosition: 1
-        })}
-        onLayout={() => flatListRef.current?.scrollToEnd({
-          animated: true,
-          index: responses.length - 1,
-          viewPosition: 1
-        })}
-      />
-      <View style={styles.inputContainer}>
-        <View style={styles.inputView}>
-          <View style={styles.inputText}>
-            <TextInput
-              placeholder='Type here...'
-              onChangeText={handleChangePrompt}
-              value={prompt}
-              // multiline
-              // style={{ height: 200 }}
-              // keyboardType={'email-address'}
-            />
-          </View>
-          <TouchableOpacity
-            disabled={loading || prompt === ''}
-            onPress={gptChat}
-          >
-            {loading
-              ? <ActivityIndicator size='small' color='silver' />
-              : <Ionicons
-                name='md-paper-plane'
-                size={24}
-                color={prompt ? 'black' : 'silver'} />}
-          </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <KeyboardAvoidingView
+        style={styles.containerOutside}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <View style={styles.topButtons}>
+          <Button title='Clear' onPress={clearData} />
+          <Button title='Logout' onPress={logout} />
         </View>
-      </View>
-    </KeyboardAvoidingView>
+        <FlatList
+          ref={flatListRef}
+          style={styles.flatList}
+          data={responses}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={
+            ({ item }) => {
+              const styles = StyleSheet.create({
+                questionView: {
+                  backgroundColor: item.rgb,
+                  padding: 14,
+                  marginTop: 20,
+                  marginBottom: -10,
+                  borderStyle: 'solid',
+                  borderRadius: 10
+                },
+                textQuestion: {
+                  fontSize: 14,
+                  fontWeight: 'bold'
+                },
+                answerView: {
+                  position: 'relative',
+                  width: '100%',
+                  padding: 14,
+                  marginTop: 20,
+                  marginBottom: 13,
+                  borderWidth: 1,
+                  borderColor: item.rgb,
+                  borderStyle: 'solid',
+                  borderRadius: 10,
+                  backgroundColor: '#fff'
+                  // shadowColor: '#000',
+                  // shadowOffset: {
+                  //   width: 0,
+                  //   height: 0
+                  // }, shadowOpacity: 0.25,
+                },
+                textAnswer: {
+                  fontSize: 16
+                }
+              })
+
+              return (
+                <View>
+                  <View style={styles.questionView}>
+                    <Text style={styles.textQuestion}>{item.question}</Text>
+                    <Clipper data={item.question} color={'#777'} />
+                  </View>
+                  <View style={styles.answerView}>
+                    <TheAnswer data={item.answer.replace(/^[\n?]+/, '')} />
+                    <Clipper data={item.answer.replace(/^[\n?]+/, '')} color={'silver'} />
+                  </View>
+                </View>
+              )
+            }
+          }
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({
+            animated: true,
+            index: responses.length - 1,
+            viewPosition: 1
+          })}
+          onLayout={() => flatListRef.current?.scrollToEnd({
+            animated: true,
+            index: responses.length - 1,
+            viewPosition: 1
+          })}
+        />
+        <View style={styles.inputContainer}>
+          <View style={styles.inputView}>
+            <View style={styles.inputText}>
+              <TextInput
+                placeholder='Type here...'
+                onChangeText={handleChangePrompt}
+                value={prompt}
+                multiline={true}
+                style={styles.input}
+              />
+            </View>
+            <TouchableOpacity
+              disabled={loading || prompt === ''}
+              onPress={gptChat}
+            >
+              {loading
+                ? <ActivityIndicator size='small' color='silver' />
+                : <Ionicons
+                  name='md-paper-plane'
+                  size={24}
+                  color={prompt ? 'black' : 'silver'} />}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   )
 }
 
@@ -227,13 +232,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     // alignItems: 'center',
     width: '100%',
-    borderColor: 'gray',
+    borderColor: 'silver',
     backgroundColor: '#fff',
     borderWidth: 1,
     padding: 10,
-    marginBottom: 94,
+    paddingLeft: 16,
+    paddingRight: 14,
+    marginBottom: 96,
     marginTop: 10,
-    borderRadius: 10
+    borderRadius: 24
   },
   inputText: {
     display: 'flex',
@@ -241,6 +248,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '93%'
+  },
+  input: {
+    width: '100%',
+    maxHeight: 80,
+    fontSize: 16,
   },
   submitButton: {
     width: 32,
