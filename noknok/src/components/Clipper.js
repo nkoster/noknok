@@ -5,6 +5,8 @@ import * as Clipboard from 'expo-clipboard'
 
 function Clipper({ data, color }) {
 
+  console.log('color', color)
+
   const copyToClipboard = () => {
     Alert.alert(
       'Copied to clipboard',
@@ -31,7 +33,7 @@ function Clipper({ data, color }) {
         <Ionicons
           name='copy-outline'
           size={14}
-          color={color} />
+          color={'#999'} />
       </TouchableOpacity>
     </View>
   )
@@ -42,7 +44,7 @@ export default Clipper
 const styles = StyleSheet.create({
   copyIcon: {
     position: 'absolute',
-    top: 2,
-    right: 2
+    top: 4,
+    right: 4
   }
 })
