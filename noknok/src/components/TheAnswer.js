@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View } from 'react-native'
+import React, { Text, StyleSheet, View } from 'react-native'
 import Clipper from './Clipper'
 
 function TheAnswer({ data }) {
@@ -30,13 +30,12 @@ function TheAnswer({ data }) {
           )
         } else {
           if (item.length > 0) {
-            return <Text key={index}>{item.split().map((item, index) => {
-              if (item.match(regexCode)) {
-                const code = item.split('`')[1]
-                console.log('CODEE', code)
+            return <Text key={index}>{item.split(regexCode).map((item, index) => {
+              if (codes && codes.includes('`' + item + '`')) {
+                console.log('CODEE', item)
                 return (
                   <Text key={index} style={{ fontFamily: 'Courier New', fontWeight: 'bold' }}>
-                    {code}
+                    {item}
                   </Text>
                 )
               } else {
