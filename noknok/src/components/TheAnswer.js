@@ -1,30 +1,49 @@
 import { Text, StyleSheet, View } from 'react-native'
+import Clipper from './Clipper'
 
 function TheAnswer({ data }) {
 
-  // console.log('DATA', data)
+  console.log('DATA', data)
 
-  const regex = /```([\s\S]+?)```/g
+  const regexCode = /`([\s\S]+?)`/g
+  const codes = data.match(regexCode)
+  const regexCodeBlock = /```([\s\S]+?)```/g
+  const codeBlocks = data.match(regexCodeBlock)
+  const regexBold = /\*\*([\s\S]+?)\*\*/g
+  const bolds = data.match(regexBold)
 
-  const codeBlocks = data.match(regex)
-
-  console.log('CODE', codeBlocks)
+  // console.log('CODE', codeBlocks)
 
   return (
     <Text>
-      {data.split(regex).map((item, index) => {
+      {data.split(regexCodeBlock).map((item, index) => {
         if (codeBlocks && codeBlocks.includes('```' + item + '```')) {
-          console.log('CODE BLOCK', item.slice(1, -1))
+          const code = item.split('\n').slice(1).join('\n').trim()
+          console.log('CODE BLOCK', code)
           return (
             <View key={index} style={styles.codeBlock}>
               <Text style={styles.codeBlockText}>
-                {item.split('\n').slice(1).join('\n')}
+                {code}
               </Text>
+              <Clipper data={code} color={'#666'} />
             </View>
           )
         } else {
-          console.log('TEXT', item)
-          return <Text key={index}>{item}</Text>
+          if (item.length > 0) {
+            return <Text key={index}>{item.split().map((item, index) => {
+              if (item.match(regexCode)) {
+                const code = item.split('`')[1]
+                console.log('CODEE', code)
+                return (
+                  <Text key={index} style={{ fontFamily: 'Courier New', fontWeight: 'bold' }}>
+                    {code}
+                  </Text>
+                )
+              } else {
+                return <Text key={index}>{item}</Text>
+              }
+            })}</Text>
+          }
         }
       })}
     </Text>
@@ -35,9 +54,11 @@ export default TheAnswer
 
 const styles = StyleSheet.create({
   codeBlock: {
-    // backgroundColor: '#f2f2f2',
-    borderRadius: 10,
-    padding: 8
+    backgroundColor: '#fafafa',
+    borderRadius: 3,
+    width: '100%',
+    padding: 8,
+    paddingRight: 30,
   },
   codeBlockText: {
     fontFamily: 'Courier New',
