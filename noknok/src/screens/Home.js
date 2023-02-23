@@ -147,6 +147,9 @@ const HomeScreen = () => {
               placeholder='Type here...'
               onChangeText={handleChangePrompt}
               value={prompt}
+              // multiline
+              // style={{ height: 200 }}
+              // keyboardType={'email-address'}
             />
           </View>
           <TouchableOpacity
@@ -222,12 +225,13 @@ const styles = StyleSheet.create({
   inputView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    // alignItems: 'center',
     width: '100%',
     borderColor: 'gray',
     backgroundColor: '#fff',
     borderWidth: 1,
     padding: 10,
-    marginBottom: 98,
+    marginBottom: 94,
     marginTop: 10,
     borderRadius: 10
   },
