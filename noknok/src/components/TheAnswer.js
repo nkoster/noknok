@@ -64,7 +64,7 @@ export default TheAnswer
 
 const styles = StyleSheet.create({
   codeBlock: {
-    backgroundColor: '#fafafa',
+    backgroundColor: '#f8f8f8',
     borderRadius: 3,
     width: '100%',
     padding: 8,
