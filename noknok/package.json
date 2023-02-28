@@ -17,7 +17,8 @@
     "expo-updates": "~0.15.6",
     "react": "18.1.0",
     "react-native": "0.70.5",
-    "expo-clipboard": "~4.0.1"
+    "expo-clipboard": "~4.0.1",
+    "expo-linear-gradient": "~12.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
