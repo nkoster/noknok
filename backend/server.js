@@ -149,7 +149,7 @@ app.post('/gptchat', authenticate, async (req, res) => {
 
 function generateAccessToken(user) {
   return jwt.sign(user, ACCESS_TOKEN_SECRET, {
-    expiresIn: '60m'
+    expiresIn: '365d'
   })
 }
 
